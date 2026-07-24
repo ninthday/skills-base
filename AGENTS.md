@@ -250,4 +250,4 @@ When generating skills (Type 1 only):
 
 ## Supported Projects
 
-See `meta.ts` for the canonical list of projects and their repository URLs.
+See `meta.py` for the canonical list of projects and their repository URLs.

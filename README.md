@@ -1,95 +1,87 @@
 # Tuvix Shih (ninthday) Skills
 
-[Agent skills](https://agentskills.io/) built around [Tuvix Shih](https://github.com/ninthday)'s personal preferences and development style.
+[Agent Skills](https://agentskills.io/) curated by [Tuvix Shih](https://github.com/ninthday) for practical software development workflows.
 
 ## Installation
 
-Install using the `skills` CLI with the all skills:
+Install every packaged skill:
 
 ```bash
 npx skills@latest add ninthday/skills-base --skill='*'
-# To install all skills globally:
+```
+
+Install them globally:
+
+```bash
 npx skills@latest add ninthday/skills-base --skill='*' -g
 ```
 
 ## Skills
 
-### Self-maintained Skills
-
-| Name | Description |
-|------|-------------|
-| [commit-message](./skills/commit-message/SKILL.md) | Generate concise Git commit messages |
-| [github-release-notes](./skills/github-release-notes/SKILL.md) | Generate GitHub release notes following Keep a Changelog spec |
-| [scan-repo](./skills/scan-repo/SKILL.md) | Security scan of GitHub open source projects |
-| [scan-skill](./skills/scan-skill/SKILL.md) | Security auditing tool for scanning skills |
-| [write-social-post](./skills/write-social-post/SKILL.md) | Write strategic social media posts for articles, trends, news, or tech commentary |
-| [ycs77-vue](./skills/ycs77-vue/SKILL.md) | Lucas Yang's Vue 3 conventions |
-
 ### Vendored Skills
 
-Synced from external repositories that maintain their own skills.
+The following skills are currently packaged in `skills/`.
 
 | Skill | Description | Source |
 |-------|-------------|--------|
-| [grill-me](skills/grill-me) | Interview the user relentlessly to stress-test a plan or design | [mattpocock/skills](https://github.com/mattpocock/skills) |
-| [grill-with-docs](skills/grill-with-docs) | Grill a plan against the domain model, updating docs and ADRs inline | [mattpocock/skills](https://github.com/mattpocock/skills) |
-| [tdd](skills/tdd) | Test-driven development with the red-green-refactor loop | [mattpocock/skills](https://github.com/mattpocock/skills) |
-| [diagnose](skills/diagnose) | Disciplined diagnosis loop for hard bugs and performance regressions | [mattpocock/skills](https://github.com/mattpocock/skills) |
-| [zoom-out](skills/zoom-out) | Zoom out for broader context and a higher-level map of the code | [mattpocock/skills](https://github.com/mattpocock/skills) |
-| [improve-codebase-architecture](skills/improve-codebase-architecture) | Find deepening opportunities to make a codebase more testable and AI-navigable | [mattpocock/skills](https://github.com/mattpocock/skills) |
-| [caveman](skills/caveman) | Ultra-compressed communication mode that cuts token usage ~75% | [mattpocock/skills](https://github.com/mattpocock/skills) |
-| [handoff](skills/handoff) | Compact the conversation into a handoff document for another agent | [mattpocock/skills](https://github.com/mattpocock/skills) |
-| [prototype](skills/prototype) | Build a throwaway prototype to flesh out a design before committing | [mattpocock/skills](https://github.com/mattpocock/skills) |
-| [write-a-skill](skills/write-a-skill) | Create new agent skills with proper structure and progressive disclosure | [mattpocock/skills](https://github.com/mattpocock/skills) |
+| [grill-with-docs](skills/grill-with-docs/SKILL.md) | Stress-test a plan or design while creating ADRs and glossary entries. | [mattpocock/skills](https://github.com/mattpocock/skills) |
+| [grilling](skills/grilling/SKILL.md) | Relentlessly question a plan, decision, or idea to expose unresolved assumptions. | [mattpocock/skills](https://github.com/mattpocock/skills) |
+| [domain-modeling](skills/domain-modeling/SKILL.md) | Build and refine a project's domain model, terminology, and architectural decisions. | [mattpocock/skills](https://github.com/mattpocock/skills) |
+| [tdd](skills/tdd/SKILL.md) | Build features and fixes with a test-driven development workflow. | [mattpocock/skills](https://github.com/mattpocock/skills) |
+| [diagnosing-bugs](skills/diagnosing-bugs/SKILL.md) | Apply a disciplined diagnosis loop to bugs and performance regressions. | [mattpocock/skills](https://github.com/mattpocock/skills) |
+| [improve-codebase-architecture](skills/improve-codebase-architecture/SKILL.md) | Identify codebase deepening opportunities and present them in a visual report. | [mattpocock/skills](https://github.com/mattpocock/skills) |
+| [prototype](skills/prototype/SKILL.md) | Build a throwaway prototype to answer a design question. | [mattpocock/skills](https://github.com/mattpocock/skills) |
+| [to-spec](skills/to-spec/SKILL.md) | Synthesize the current conversation into a specification and publish it to the issue tracker. | [mattpocock/skills](https://github.com/mattpocock/skills) |
+| [handoff](skills/handoff/SKILL.md) | Compact the current conversation into a handoff document for another agent. | [mattpocock/skills](https://github.com/mattpocock/skills) |
+| [writing-great-skills](skills/writing-great-skills/SKILL.md) | Apply predictable vocabulary and principles when writing or editing skills. | [mattpocock/skills](https://github.com/mattpocock/skills) |
+| [chinese-content-writing-guideline](skills/chinese-content-writing-guideline/SKILL.md) | Write and review Traditional Chinese content using Taiwan terminology and conventions. | [jim60105/copilot-prompt](https://github.com/jim60105/copilot-prompt) |
+| [drawio-diagrams-enhanced](skills/drawio-diagrams-enhanced/SKILL.md) | Create draw.io diagrams, including flowcharts, UML, WBS, and RACI matrices. | [jim60105/copilot-prompt](https://github.com/jim60105/copilot-prompt) |
+| [python-security](skills/python-security/SKILL.md) | Design, implement, and verify secure Python applications following OWASP guidance. | [jim60105/copilot-prompt](https://github.com/jim60105/copilot-prompt) |
+| [git-commit](skills/git-commit/SKILL.md) | Analyze changes, stage them logically, and create Conventional Commits. | [github/awesome-copilot](https://github.com/github/awesome-copilot) |
+| [readme-blueprint-generator](skills/readme-blueprint-generator/SKILL.md) | Generate repository README files from project documentation and conventions. | [github/awesome-copilot](https://github.com/github/awesome-copilot) |
 
 ## Usage
 
-### Vue Projects
-
-First, install the required skills:
+Install one skill by name:
 
 ```bash
-npx skills add antfu/skills \
-  --skill vue \
-  --skill vue-best-practices \
-  --skill nuxt  # For Nuxt projects
+npx skills@latest add ninthday/skills-base --skill=git-commit
 ```
 
-Then add the following to `AGENTS.md` (or `CLAUDE.md`) in your project root to ensure the AI assistant loads the correct skills when working with Vue 3 SFCs:
-
-```md
-## Skills Activation Rules
-
-`ycs77-vue` is the project-level convention. When rules conflict, `ycs77-vue` takes precedence.
-
-- **When writing, modifying, or reviewing Vue 3 SFCs**, load ALL of the following skills:
-  1. `vue`
-  2. `vue-best-practices`
-  3. `ycs77-vue`
-```
-
-> For Nuxt projects, also include `nuxt` in the list above.
+Once installed, your agent loads a skill when its description matches the task. Review the skill's `SKILL.md` for its trigger conditions and workflow.
 
 ## Generate Skills
 
-1. Clone this repository
-2. Install dependencies: `uv sync`
-3. Update `meta.py` with your own projects and skill sources
-4. Run `uv run skills-manager cleanup --yes` to remove existing submodules and skills
-5. Run `uv run skills-manager init` to clone the submodules
-6. Run `uv run skills-manager sync` to sync vendored skills
-7. Ask your agent to `Generate skills for <project>` (recommended one at a time to manage token usage)
+1. Clone this repository.
+2. Install dependencies:
 
-See [AGENTS.md](AGENTS.md) for detailed generation guidelines.
+   ```bash
+   uv sync
+   ```
+
+3. Configure skill sources in `meta.py`.
+4. Initialize configured Git submodules:
+
+   ```bash
+   uv run skills-manager init --yes
+   ```
+
+5. Sync vendored skills from the initialized submodules:
+
+   ```bash
+   uv run skills-manager sync
+   ```
+
+6. For generated source projects, create or update skills according to [AGENTS.md](AGENTS.md).
 
 ## Credits
 
-- The Skills Generator and CLI are adapted from [antfu/skills](https://github.com/antfu/skills) — thanks [Anthony Fu](https://github.com/antfu)
+- The Skills Manager CLI is adapted from [antfu/skills](https://github.com/antfu/skills) — thanks [Anthony Fu](https://github.com/antfu).
 
 ## Author
 
-Lucas Yang (yangchenshin77@gmail.com)
+Tuvix Shih (tuvix@ninthday.info)
 
 ## License
 
-[MIT License](LICENSE)
+[GNU Free Documentation License 1.3](LICENSE.md)

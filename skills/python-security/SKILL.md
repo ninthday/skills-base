@@ -11,6 +11,9 @@ description: >-
   static analysis (bandit, safety, semgrep), or (8) handle any Python security
   concern including injection prevention, secure deserialization, SSRF protection,
   secrets management, and secure deployment.
+license: GFDL-1.3-or-later
+metadata:
+  author: Jim@ChenJ.im
 ---
 
 # Python Security Development Guide
