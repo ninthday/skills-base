@@ -1,15 +1,15 @@
-# Lucas Yang's Skills
+# Tuvix Shih (ninthday) Skills
 
-[Agent skills](https://agentskills.io/) built around [Lucas Yang](https://github.com/ycs77)'s personal preferences and development style.
+[Agent skills](https://agentskills.io/) built around [Tuvix Shih](https://github.com/ninthday)'s personal preferences and development style.
 
 ## Installation
 
 Install using the `skills` CLI with the all skills:
 
 ```bash
-npx skills add ycs77/skills --skill='*'
+npx skills@latest add ninthday/skills-base --skill='*'
 # To install all skills globally:
-npx skills add ycs77/skills --skill='*' -g
+npx skills@latest add ninthday/skills-base --skill='*' -g
 ```
 
 ## Skills
