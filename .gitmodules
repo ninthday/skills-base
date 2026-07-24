@@ -1,0 +1,9 @@
+[submodule "vendor/mattpocock"]
+	path = vendor/mattpocock
+	url = https://github.com/mattpocock/skills
+[submodule "vendor/JimChen"]
+	path = vendor/JimChen
+	url = https://github.com/jim60105/copilot-prompt
+[submodule "vendor/awesome-copilot"]
+	path = vendor/awesome-copilot
+	url = https://github.com/github/awesome-copilot
