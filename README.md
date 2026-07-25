@@ -74,6 +74,44 @@ Once installed, your agent loads a skill when its description matches the task. 
 
 6. For generated source projects, create or update skills according to [AGENTS.md](AGENTS.md).
 
+## Archived Vendored Skills
+
+When a vendored skill is removed upstream, `skills-manager` will not delete it. Instead, the next `check` or `sync` records the disappearance, then archives the local copy so the history is preserved.
+
+### Detection
+
+`uv run skills-manager check` always fetches the remote tracking ref before reporting. Any configured vendor source whose `skills/<source>` directory is gone from `@{u}` is listed in an `Invalid vendor skills:` block, e.g.:
+
+```text
+All submodules are up to date
+Invalid vendor skills:
+- example-skill: vendor/example/skills/engineering/example
+```
+
+`check` still exits `0`; it is purely informational.
+
+### Archiving
+
+`uv run skills-manager sync` runs the same detection against the updated working tree. For every missing source it:
+
+1. Appends `- **Upstream Removed:** <timestamp>` to the skill's `SYNC.md` (UTC `YYYYMMDDTHHMMSSZ`). If a previous archive already recorded the removal timestamp, that timestamp is reused so the snapshot is idempotent.
+2. Moves the active `skills/<output>/` directory to `archived-skills/<output>/<timestamp>/`. If a destination with that timestamp already exists, a `-2`, `-3`, … suffix is appended — archives are never overwritten.
+3. Prints `Archived invalid vendor skill: <output> → archived-skills/<output>/<timestamp>`.
+
+Running `sync` again on a still-missing source prints `Already archived invalid vendor skill: <output>` and leaves the archive untouched:
+
+```text
+Archived invalid vendor skill: example-skill → archived-skills/example-skill/20260725T120000Z
+```
+
+If the active output is missing but no archive exists yet, `sync` reports `Invalid vendor skill has no local output: <output>` and does not create an empty directory.
+
+### Behaviour guarantees
+
+- Historical archives are immutable. If the upstream skill reappears later, the normal sync flow recreates `skills/<output>/`; the previous archive is never overwritten or removed.
+- `uv run skills-manager cleanup --yes` only inspects `skills/` for entries not declared in `meta.py`. The `archived-skills/` directory is never listed for removal.
+
+
 ## Credits
 
 - The Skills Manager CLI is adapted from [antfu/skills](https://github.com/antfu/skills) — thanks [Anthony Fu](https://github.com/antfu).

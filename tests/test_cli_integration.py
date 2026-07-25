@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -111,3 +112,49 @@ def test_cli_manages_local_submodules_and_skills(tmp_path: Path) -> None:
     assert (root / "vendor" / "example").is_dir()
     assert not (root / "vendor" / "extra").exists()
     assert not (root / "skills" / "extra-skill").exists()
+
+
+    source_skill = vendor_source / "skills" / "engineering" / "example" / "SKILL.md"
+    source_skill.unlink()
+    source_skill.parent.rmdir()
+    git(vendor_source, "add", "--all")
+    git(vendor_source, "commit", "-m", "Remove example skill")
+
+    checked_after_removal = run_cli(root, "check")
+    assert checked_after_removal.returncode == 0, checked_after_removal.stderr
+    assert "Invalid vendor skills:" in checked_after_removal.stdout
+    assert "example-skill" in checked_after_removal.stdout
+    assert "vendor/example/skills/engineering/example" in checked_after_removal.stdout
+
+    synchronized_after_removal = run_cli(root, "sync")
+    assert synchronized_after_removal.returncode == 0, synchronized_after_removal.stderr
+    assert "Archived invalid vendor skill: example-skill" in synchronized_after_removal.stdout
+    assert not output.exists()
+
+    archive_root = root / "archived-skills" / "example-skill"
+    archived_paths = tuple(archive_root.iterdir())
+    assert len(archived_paths) == 1
+    archived_output = archived_paths[0]
+    assert re.fullmatch(r"\d{8}T\d{6}Z", archived_output.name)
+    assert (archived_output / "SKILL.md").read_text(encoding="utf-8") == "# Example skill\n"
+    archived_sync_info = (archived_output / "SYNC.md").read_text(encoding="utf-8")
+    assert "- **Source:** `vendor/example/skills/engineering/example`" in archived_sync_info
+    assert f"- **Git SHA:** `{vendor_sha}`" in archived_sync_info
+    assert (
+        f"- **Upstream Removed:** {archived_output.name}" in archived_sync_info
+    )
+    assert archived_sync_info.count("- **Upstream Removed:**") == 1
+
+    synchronized_again = run_cli(root, "sync")
+    assert synchronized_again.returncode == 0, synchronized_again.stderr
+    assert "Already archived invalid vendor skill: example-skill" in synchronized_again.stdout
+    assert tuple(archive_root.iterdir()) == archived_paths
+
+    checked_without_updates = run_cli(root, "check")
+    assert checked_without_updates.returncode == 0, checked_without_updates.stderr
+    assert "All submodules are up to date" in checked_without_updates.stdout
+    assert "Invalid vendor skills:" in checked_without_updates.stdout
+
+    cleaned_after_archive = run_cli(root, "cleanup", "--yes")
+    assert cleaned_after_archive.returncode == 0, cleaned_after_archive.stderr
+    assert archived_output.is_dir()

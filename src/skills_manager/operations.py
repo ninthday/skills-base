@@ -2,7 +2,7 @@ import time
 from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from shutil import copy2, copytree, rmtree
+from shutil import Error, copy2, copytree, move, rmtree
 from subprocess import CalledProcessError
 
 import questionary
@@ -205,6 +205,76 @@ def _vendor_sha(vendor_path: Path) -> str | None:
         return None
 
 
+def _upstream_skill_exists(vendor_path: Path, source_name: str) -> bool | None:
+    try:
+        output = run_git(
+            ["ls-tree", "-d", "--name-only", "@{u}", "--", f"skills/{source_name}"],
+            vendor_path,
+        )
+    except CalledProcessError:
+        return None
+    return bool(output)
+
+
+def _record_upstream_removal(output_path: Path) -> str | None:
+    sync_info_path = output_path / "SYNC.md"
+    try:
+        sync_info = (
+            sync_info_path.read_text(encoding="utf-8")
+            if sync_info_path.exists()
+            else "# Sync Info\n"
+        )
+    except OSError as error:
+        print(f"Failed to read sync info for {output_path.name}: {error}")
+        return None
+
+    prefix = "- **Upstream Removed:** "
+    for line in sync_info.splitlines():
+        if line.startswith(prefix):
+            return line.removeprefix(prefix)
+
+    timestamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+    try:
+        sync_info_path.write_text(
+            f"{sync_info.rstrip()}\n{prefix}{timestamp}\n", encoding="utf-8"
+        )
+    except OSError as error:
+        print(f"Failed to record upstream removal for {output_path.name}: {error}")
+        return None
+    return timestamp
+
+
+def _archive_invalid_vendor_skill(root: Path, output_name: str) -> None:
+    output_path = root / "skills" / output_name
+    archive_root = root / "archived-skills" / output_name
+    if not output_path.exists():
+        if archive_root.is_dir():
+            print(f"Already archived invalid vendor skill: {output_name}")
+        else:
+            print(f"Invalid vendor skill has no local output: {output_name}")
+        return
+
+    timestamp = _record_upstream_removal(output_path)
+    if timestamp is None:
+        return
+
+    destination = archive_root / timestamp
+    suffix = 2
+    while destination.exists():
+        destination = archive_root / f"{timestamp}-{suffix}"
+        suffix += 1
+    try:
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        move(str(output_path), str(destination))
+    except (Error, OSError) as error:
+        print(f"Failed to archive invalid vendor skill {output_name}: {error}")
+        return
+    print(
+        f"Archived invalid vendor skill: {output_name} → "
+        f"{destination.relative_to(root)}"
+    )
+
+
 def sync_submodules(root: Path, metadata: Metadata) -> int:
     try:
         run_git(
@@ -222,6 +292,7 @@ def sync_submodules(root: Path, metadata: Metadata) -> int:
         print(f"Failed to update submodules: {error}")
         return 1
 
+    invalid_skills: list[tuple[str, str]] = []
     for vendor_name, vendor in metadata.vendors.items():
         vendor_path = root / "vendor" / vendor_name
         vendor_skills = vendor_path / "skills"
@@ -230,13 +301,14 @@ def sync_submodules(root: Path, metadata: Metadata) -> int:
             continue
         if not vendor_skills.is_dir():
             print(f"No skills directory in vendor/{vendor_name}/skills/")
-            continue
 
         for source_name, output_name in vendor.skills.items():
             source_path = vendor_skills / source_name
             output_path = root / "skills" / output_name
             if not source_path.is_dir():
-                print(f"Skill not found: vendor/{vendor_name}/skills/{source_name}")
+                invalid_skills.append(
+                    (output_name, f"vendor/{vendor_name}/skills/{source_name}")
+                )
                 continue
 
             if output_path.exists():
@@ -252,6 +324,12 @@ def sync_submodules(root: Path, metadata: Metadata) -> int:
                 encoding="utf-8",
             )
             print(f"Synced: {source_name} → {output_name}")
+
+    if invalid_skills:
+        print("Invalid vendor skills:")
+        for output_name, source_path in invalid_skills:
+            print(f"- {output_name}: {source_path}")
+            _archive_invalid_vendor_skill(root, output_name)
 
     print("All skills synced")
     return 0
@@ -288,13 +366,28 @@ def check_updates(root: Path, metadata: Metadata) -> int:
                 name = f"{name} ({outputs})"
             updates.append((name, project.type, behind))
 
-    if not updates:
-        print("All submodules are up to date")
-        return 0
+    invalid_skills: list[tuple[str, str]] = []
+    for vendor_name, vendor in metadata.vendors.items():
+        vendor_path = root / "vendor" / vendor_name
+        if not vendor_path.is_dir():
+            continue
+        for source_name, output_name in vendor.skills.items():
+            if _upstream_skill_exists(vendor_path, source_name) is False:
+                invalid_skills.append(
+                    (output_name, f"vendor/{vendor_name}/skills/{source_name}")
+                )
 
-    print("Updates available:")
-    for name, project_type, behind in updates:
-        print(f"  {name} ({project_type}): {behind} commits behind")
+    if updates:
+        print("Updates available:")
+        for name, project_type, behind in updates:
+            print(f"  {name} ({project_type}): {behind} commits behind")
+    else:
+        print("All submodules are up to date")
+
+    if invalid_skills:
+        print("Invalid vendor skills:")
+        for output_name, source_path in invalid_skills:
+            print(f"- {output_name}: {source_path}")
     return 0
 
 
