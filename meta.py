@@ -39,11 +39,6 @@ vendors: dict[str, VendorSkillMeta] = {
 
 # Self-maintained skills with Lucas Yang's preferences, tastes, and recommendations.
 manual = (
-    # "bruno-api-testing",
+    "nice-commit",
     # "chinese-content-writing-guideline",
-    # "documentation-writer",
-    # "drawio-diagrams-enhanced",
-    # "git-commit",
-    # "python-security",
-    # "readme-blueprint-generator",
 )
