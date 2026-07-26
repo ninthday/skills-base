@@ -115,6 +115,7 @@ If the active output is missing but no archive exists yet, `sync` reports `Inval
 ## Credits
 
 - The Skills Manager CLI is adapted from [antfu/skills](https://github.com/antfu/skills) — thanks [Anthony Fu](https://github.com/antfu).
+- Thanks to [Lucas Yang](https://github.com/ycs77) and the [ycs77/skills](https://github.com/ycs77/skills) repository for helping shape the idea.
 
 ## Author
 

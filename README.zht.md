@@ -115,6 +115,7 @@ Archived invalid vendor skill: example-skill → archived-skills/example-skill/2
 ## 致謝
 
 - Skills Manager CLI 改編自 [antfu/skills](https://github.com/antfu/skills)，感謝 [Anthony Fu](https://github.com/antfu)。
+- 感謝 [Lucas Yang](https://github.com/ycs77) 與 [ycs77/skills](https://github.com/ycs77/skills) 在想法上的幫忙。
 
 ## 作者
 
