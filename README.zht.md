@@ -7,16 +7,24 @@
 安裝所有已封裝的 skill：
 
 ```bash
-npx skills@latest add ninthday/skills-base --skill='*'
+npx skills@latest add ninthday/skills-base
 ```
 
 全域安裝所有 skill：
 
 ```bash
-npx skills@latest add ninthday/skills-base --skill='*' -g
+npx skills@latest add ninthday/skills-base -g
 ```
 
 ## Skills
+
+### 自行維護的 Skills
+
+由 Tuvix Shih 依個人偏好、經驗與建議維護的 skill。
+
+| Skill | 說明 | 來源 |
+|-------|------|------|
+| [nice-commit](skills/nice-commit/SKILL.md) | 為目前的 Git 變更產生 Conventional Commit 訊息；預設使用正體中文。 | Tuvix Shih |
 
 ### 匯入的 Skills
 
@@ -45,7 +53,7 @@ npx skills@latest add ninthday/skills-base --skill='*' -g
 依名稱安裝單一 skill：
 
 ```bash
-npx skills@latest add ninthday/skills-base --skill=git-commit
+npx skills@latest add ninthday/skills-base --skill git-commit
 ```
 
 安裝後，agent 會在 skill 的描述符合任務時載入它。請閱讀各 skill 的 `SKILL.md`，了解其觸發條件與工作流程。

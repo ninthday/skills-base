@@ -37,7 +37,7 @@ vendors: dict[str, VendorSkillMeta] = {
     ),
 }
 
-# Self-maintained skills with Lucas Yang's preferences, tastes, and recommendations.
+# Self-maintained skills with Tuvix Shih preferences, tastes, and recommendations.
 manual = (
     "nice-commit",
     # "chinese-content-writing-guideline",

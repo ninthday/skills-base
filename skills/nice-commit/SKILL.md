@@ -2,7 +2,7 @@
 name: nice-commit
 description: Use when the user asks to write, generate, or suggest a commit message for current Git changes. Defaults to a Traditional Chinese Conventional Commit.
 metadata:
-  author: ninthday
+  author: Tuvix Shih
   version: "2026.07.26"
 ---
 

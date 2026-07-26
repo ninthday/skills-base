@@ -7,16 +7,24 @@
 Install every packaged skill:
 
 ```bash
-npx skills@latest add ninthday/skills-base --skill='*'
+npx skills@latest add ninthday/skills-base
 ```
 
 Install them globally:
 
 ```bash
-npx skills@latest add ninthday/skills-base --skill='*' -g
+npx skills@latest add ninthday/skills-base -g
 ```
 
 ## Skills
+
+### Self-Maintained Skills
+
+Skills maintained by Tuvix Shih for personal preferences, experience, and recommendations.
+
+| Skill | Description | Source |
+|-------|-------------|--------|
+| [nice-commit](skills/nice-commit/SKILL.md) | Generate Conventional Commit messages for current Git changes; defaults to Traditional Chinese. | Tuvix Shih |
 
 ### Vendored Skills
 
@@ -45,7 +53,7 @@ The following skills are currently packaged in `skills/`.
 Install one skill by name:
 
 ```bash
-npx skills@latest add ninthday/skills-base --skill=git-commit
+npx skills@latest add ninthday/skills-base --skill git-commit
 ```
 
 Once installed, your agent loads a skill when its description matches the task. Review the skill's `SKILL.md` for its trigger conditions and workflow.
