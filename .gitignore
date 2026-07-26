@@ -1,0 +1,16 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.idea/
+*.swp
+*.swo
+*~
+
+# Python
+.venv/
+.ruff_cache/
+.pytest_cache/
+__pycache__/
+*.py[cod]
