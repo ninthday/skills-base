@@ -40,5 +40,6 @@ vendors: dict[str, VendorSkillMeta] = {
 # Self-maintained skills with Tuvix Shih preferences, tastes, and recommendations.
 manual = (
     "nice-commit",
+    "nice-llm-wiki",
     # "chinese-content-writing-guideline",
 )

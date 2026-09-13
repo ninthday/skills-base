@@ -1,5 +1,8 @@
 # Tuvix Shih（ninthday）的 Skills
 
+[![Agent Skills](https://img.shields.io/badge/Agent_Skills-compatible-blue)](https://agentskills.io)
+[![Install](https://img.shields.io/badge/Install-npx_add--skill-green)](https://github.com/ninthday/skills-base#install)
+
 由 [Tuvix Shih](https://github.com/ninthday) 整理、供實務軟體開發工作流程使用的 [Agent Skills](https://agentskills.io/)。
 
 ## 安裝
@@ -25,6 +28,7 @@ npx skills@latest add ninthday/skills-base -g
 | Skill | 說明 | 來源 |
 |-------|------|------|
 | [nice-commit](skills/nice-commit/SKILL.md) | 為目前的 Git 變更產生 Conventional Commit 訊息；預設使用正體中文。 | Tuvix Shih |
+| [nice-llm-wiki](skills/nice-llm-wiki/SKILL.md) | 以不可變動的來源建立及維護個人 LLM 驅動的知識庫。 | Tuvix Shih |
 
 ### 匯入的 Skills
 

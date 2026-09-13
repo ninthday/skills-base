@@ -1,5 +1,8 @@
 # Tuvix Shih (ninthday) Skills
 
+[![Agent Skills](https://img.shields.io/badge/Agent_Skills-compatible-blue)](https://agentskills.io)
+[![Install](https://img.shields.io/badge/Install-npx_add--skill-green)](https://github.com/ninthday/skills-base#install)
+
 [Agent Skills](https://agentskills.io/) curated by [Tuvix Shih](https://github.com/ninthday) for practical software development workflows.
 
 ## Installation
@@ -25,6 +28,7 @@ Skills maintained by Tuvix Shih for personal preferences, experience, and recomm
 | Skill | Description | Source |
 |-------|-------------|--------|
 | [nice-commit](skills/nice-commit/SKILL.md) | Generate Conventional Commit messages for current Git changes; defaults to Traditional Chinese. | Tuvix Shih |
+| [nice-llm-wiki](skills/nice-llm-wiki/SKILL.md) | Build and maintain a personal LLM-powered knowledge base from immutable sources. | Tuvix Shih |
 
 ### Vendored Skills
 
