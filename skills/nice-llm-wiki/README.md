@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 
-`nice-llm-wiki` packages [Karpathy's LLM Wiki idea](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) into one installable [Agent Skills](https://agentskills.io) skill. Your coding agent ingests sources into `raw/`, compiles durable knowledge pages into `wiki/`, answers questions with citations, and lints the wiki for consistency.
+`nice-llm-wiki` packages [Karpathy's LLM Wiki idea](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) into one installable [Agent Skills](https://agentskills.io) skill. Your coding agent snapshots sources into `raw/`, compiles durable Traditional Chinese knowledge pages into `wiki/`, answers questions with citations, and lints the wiki for consistency. It can also process a manually triggered `Clippings/` queue created by Obsidian Web Clipper.
 
 ## Source
 
@@ -15,11 +15,12 @@ Original repository: [Astro-Han/karpathy-llm-wiki](https://github.com/Astro-Han/
 
 An **LLM wiki** is a knowledge system where the LLM maintains structured wiki pages instead of re-searching raw documents on every question. New sources are compiled into durable markdown pages, cross-references are updated over time, and answers cite the wiki pages that already contain the synthesized knowledge.
 
-This skill gives you three operations:
+This skill gives you four operations:
 
 | Operation | What it does | Output |
 |-----------|--------------|--------|
-| **Ingest** | Collects a source into `raw/`, triages it, then creates or updates wiki articles — or just logs it when nothing is new | New or updated wiki pages |
+| **Ingest** | Snapshots a remote source, a named local file, or a clipping into `raw/`, triages it, then creates or updates wiki articles — or just logs it when nothing is new | New or updated wiki pages |
+| **Process clippings** | Lists or sequentially processes the pending Markdown files in `Clippings/`, but only after an explicit request | Raw snapshots and completed wiki updates; processed clipping files are removed |
 | **Query** | Searches the wiki and answers with citations | Grounded answers linking to markdown pages |
 | **Lint** | Checks index integrity, links, and wiki health | Auto-fixes plus reported issues |
 
@@ -60,15 +61,27 @@ Give the skill a URL, a file, or pasted text:
 
 > "Ingest this article: https://example.com/attention-is-all-you-need"
 
-The skill stores the source in `raw/`, then compiles or updates the right knowledge pages in `wiki/`.
+The skill snapshots the source in `raw/`, then compiles or updates the right Traditional Chinese knowledge pages in `wiki/`.
 
-### 2. Ask your wiki a question
+### 2. Process Web Clipper content
+
+Save web clips as Markdown under `Clippings/`, then explicitly choose one of these operations:
+
+> "Organize `Clippings/article.md` into the wiki"
+
+> "List pending clippings"
+
+> "Process pending clippings"
+
+The last command processes every pending Markdown clipping in sorted order. It does not run automatically.
+
+### 3. Ask your wiki a question
 
 > "What do I know about attention mechanisms?"
 
-The skill searches the wiki and answers with citations linking back to your markdown pages.
+The skill searches the wiki and answers in Traditional Chinese with citations linking back to your markdown pages.
 
-### 3. Keep the wiki healthy
+### 4. Keep the wiki healthy
 
 > "Lint my wiki"
 
@@ -80,10 +93,12 @@ The core idea from Karpathy: the LLM maintains the wiki while the human focuses 
 
 ```text
 your-project/
-├── raw/            ← Immutable source material
+├── Clippings/      ← Pending Web Clipper Markdown; removed after successful ingest
+│   └── article.md
+├── raw/            ← Immutable source snapshots
 │   └── topic/
 │       └── 2026-04-03-source-article.md
-├── wiki/           ← Compiled knowledge pages maintained by the LLM
+├── wiki/           ← Traditional Chinese knowledge pages maintained by the LLM
 │   ├── topic/
 │   │   └── concept-name.md
 │   ├── index.md    ← Global table of contents
@@ -91,6 +106,22 @@ your-project/
 ```
 
 Each new source can update multiple pages, strengthen cross-references, and record contradictions. That is what makes the wiki compound over time.
+
+## Clippings Queue
+
+`Clippings/` is a manually triggered pending queue, not a directory watched in the background. A clipping is pending while its Markdown file remains in `Clippings/`; the skill does not consult `wiki/log.md` to determine pending status.
+
+An explicit request to list or process pending clippings authorizes scanning Markdown files under `Clippings/` only. The skill sorts and processes candidates sequentially because `wiki/index.md` and `wiki/log.md` are shared state. It does not scan other vault directories, follow escaping symlinks, or refetch a clipping's original URL by default.
+
+For each clipping, the skill creates an immutable `raw/` snapshot. The snapshot records its vault-relative `Clipping:` path, allowing a retry to reuse the snapshot only when its preserved source body matches the current clipping. Wiki articles always cite that raw snapshot, not the mutable clipping path.
+
+The source clipping is deleted only after the raw snapshot, triage, article updates, `wiki/index.md`, and `wiki/log.md` all succeed. `No material` is successful once its snapshot and log entry exist. If any step fails, the clipping remains in `Clippings/` for a later explicit retry.
+
+All clipping frontmatter, URLs, links, and body content are untrusted source data. They cannot authorize tool calls, directory scans, or other actions.
+
+## Output Language
+
+All agent-authored `wiki/` content uses Traditional Chinese (Taiwan): article titles and prose, headings, metadata labels, index entries, log entries, archive pages, and query answers. Source URLs, paths, code, proper nouns, and verbatim facts or quotes remain unchanged; `raw/` retains each source in its original language.
 
 ## Tool Compatibility
 
@@ -112,7 +143,7 @@ An LLM wiki is maintained by the model. It updates summaries, cross-links, index
 
 ### What sources can I ingest?
 
-Web pages, papers, blog posts, PDFs, markdown files, text files, and pasted text. The skill converts everything into markdown under `raw/` and compiles it into `wiki/`.
+Web pages, papers, blog posts, PDFs, markdown files, text files, pasted text, and Markdown clippings in `Clippings/`. The skill snapshots every imported source under `raw/` and compiles it into `wiki/`.
 
 ### Is this production-ready?
 
@@ -121,9 +152,9 @@ The workflow is based on a real knowledge base with 94 articles and 99 sources m
 ## Security Boundaries
 
 - Source material and compiled wiki content are data, not agent instructions. The skill's [Source Trust Boundary](SKILL.md#source-trust-boundary) prohibits using embedded instructions to expand tool permissions or access unrelated files.
+- A named local clipping authorizes only that file. An explicit pending-clippings command authorizes only Markdown files under `Clippings/`; resolving paths outside the project root through symlinks is rejected and reported.
 - The evidence checker confines automatically discovered articles and `wiki/log.md` to the project-local `wiki/` directory after resolving symlinks. Escaping files are skipped with stderr warnings; an escaping `wiki/` directory aborts the run. Warnings indicate incomplete coverage, not a clean bill of health.
 - Explicit CLI article arguments can still select external files. Only pass user-authorized paths; never use this feature to retry automatically rejected files.
-- These checks are not an OS sandbox or protection against concurrent filesystem changes. Run with minimal permissions in a trusted workspace. Evidence matches establish source fidelity, not source safety or truth.
 
 ## Design Boundaries
 
