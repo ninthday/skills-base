@@ -25,6 +25,13 @@ Three layers, all under the user's project root:
 
 Templates live in `references/` relative to this file. Read them when you need the exact format for raw files, articles, archive pages, or the index.
 
+### Output Language
+
+Write every agent-authored value in `wiki/` in Traditional Chinese (Taiwan), including article titles, prose, headings, metadata labels, index entries, log entries, archive pages, and query answers. Keep source URLs, file paths, code, proper nouns, and verbatim facts or quotes unchanged. `raw/` preserves each source in its original language and must not be translated.
+
+Use the Traditional Chinese field names and document structure in `references/`. The evidence checker also accepts its prior English field names so existing wikis remain valid.
+
+
 ### Initialization
 
 Triggers only on the first Ingest. Check whether `raw/` and `wiki/` exist. Create only what is missing; never overwrite existing files:

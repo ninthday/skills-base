@@ -185,6 +185,34 @@ Claims 999K users with no evidence anywhere.
 """
 
 
+TRADITIONAL_CHINESE_RAW = """# Ghostty 更新
+
+> 來源：https://example.com/ghostty
+> 收集日期：2026-04-17
+> 發布日期：2026-04-16
+
+Ghostty 在 GitHub 上達到 42K 顆星。
+"""
+
+TRADITIONAL_CHINESE_ARTICLE = """# Ghostty
+
+> 來源：Example，2026-04-16
+> 原始資料：[ghostty](../../raw/t/src.md)
+
+Ghostty 在 GitHub 上達到 42K 顆星。
+
+> **狀態：已過時**（2026-07-23）
+> 此處的 99K 是已被取代的數值。
+"""
+
+TRADITIONAL_CHINESE_ARCHIVE = """# 舊答案
+
+> 來源：[Ghostty](ghostty.md)
+> 封存日期：2026-07-01
+
+當時 Ghostty 有 999K 顆星。
+"""
+
 def make_wiki(root: Path, log: str = ""):
     (root / "raw" / "ai-research").mkdir(parents=True)
     (root / "raw" / "ai-research" / "2026-04-17-ghostty.md").write_text(RAW_CONTENT)
@@ -403,6 +431,23 @@ class HeaderScopeTest(WikiTestCase):
         self.assertNotIn("999K", result.stdout)
 
 
+class TraditionalChineseMetadataTest(WikiTestCase):
+    def test_traditional_chinese_raw_field_and_status_block_are_supported(self):
+        plain_wiki(
+            self.root,
+            "a.md",
+            TRADITIONAL_CHINESE_ARTICLE,
+            raw=TRADITIONAL_CHINESE_RAW,
+        )
+        result = run_checker(self.root)
+        self.assertNotIn("no Raw field", result.stdout)
+        self.assertNotIn("99K", result.stdout)
+
+    def test_traditional_chinese_archived_marker_is_supported(self):
+        plain_wiki(self.root, "a.md", TRADITIONAL_CHINESE_ARCHIVE)
+        result = run_checker(self.root)
+        self.assertNotIn("no Raw field", result.stdout)
+
 class RawEscapeTest(WikiTestCase):
     def test_raw_link_outside_raw_dir_is_an_evidence_error(self):
         (self.root / "raw").mkdir()
@@ -442,6 +487,19 @@ class NoMaterialParsingTest(WikiTestCase):
         )
         result = run_checker(self.root)
         self.assertIn("raw/t/orphan.md", result.stdout)
+
+    def test_traditional_chinese_no_material_heading_suppresses_inventory(self):
+        (self.root / "raw" / "t").mkdir(parents=True)
+        (self.root / "raw" / "t" / "orphan.md").write_text("# 孤立來源\n")
+        (self.root / "wiki").mkdir()
+        (self.root / "wiki" / "index.md").write_text("# 知識庫索引\n")
+        (self.root / "wiki" / "log.md").write_text(
+            "# Wiki 紀錄\n\n"
+            "## [2026-01-01] 擷取 | 無實質新知：raw/t/orphan.md\n"
+            "- 判定：無實質新知\n"
+        )
+        result = run_checker(self.root)
+        self.assertNotIn("raw/t/orphan.md", result.stdout)
 
 
 class DedupTest(WikiTestCase):

@@ -49,15 +49,18 @@ NUMBER_TOKEN_RE = re.compile(
 SUFFIX_RE = re.compile(r"[KMB%]$")
 DATE_RE = re.compile(r"\d{4}-\d{2}(?:-\d{2})?")
 QUOTE_RES = [re.compile(r'"([^"\n]*)"'), re.compile(r"“([^”\n]*)”")]
-METADATA_RE = re.compile(r"^>\s*(Sources?|Raw|Collected|Published|Updated|Archived):")
-STATUS_LINE_RE = re.compile(r"^>\s*\*\*Status:")
+METADATA_RE = re.compile(
+    r"^>\s*(Sources?|Raw|Collected|Published|Updated|Archived|來源|原始資料|收集日期|發布日期|更新日期|封存日期)[：:]"
+)
+STATUS_LINE_RE = re.compile(r"^>\s*\*\*(?:Status:|狀態：)")
 LINK_RE = re.compile(r"\[([^\]]*)\]\(([^)]*)\)")
 INLINE_CODE_RE = re.compile(r"`[^`\n]*`")
 RAW_LINK_RE = re.compile(r"\(([^)]+\.md)[^)]*\)")
 NO_MATERIAL_HEADING_RE = re.compile(
-    r"^## \[[^\]]*\]\s*ingest\s*\|\s*no material:\s*(\S+)", re.IGNORECASE
+    r"^## \[[^\]]*\]\s*(?:ingest\s*\|\s*no material:|擷取\s*\|\s*無實質新知：)\s*(\S+)",
+    re.IGNORECASE,
 )
-ARCHIVED_RE = re.compile(r"^>\s*Archived:")
+ARCHIVED_RE = re.compile(r"^>\s*(?:Archived:|封存日期：)")
 FENCE_OPEN_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})(.*)$")
 FENCE_CLOSE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})[ \t]*$")
 WS_RE = re.compile(r"\s+")
@@ -266,7 +269,7 @@ def raw_links_of(article_text: str) -> list[str]:
     the body or in code fences are content, not fields."""
     links = []
     for line in parse_document(article_text).header:
-        if re.match(r"^>\s*Raw:", line.strip()):
+        if re.match(r"^>\s*(?:Raw:|原始資料：)", line.strip()):
             links.extend(RAW_LINK_RE.findall(line))
     return links
 
